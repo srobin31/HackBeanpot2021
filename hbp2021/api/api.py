@@ -1,29 +1,34 @@
-from flask import Flask
+from flask import Flask, request
 
-import time
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from constants import GENRES
+from utils import *
 
 app = Flask(__name__)
 
-cid = '01a07d7ec2034df391340d35399df853'
-secret = '921b6b24443446429bd20e4235cd80f0'
-
-client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-@app.route('/time')
-def get_current_time():
-    return {'time': time.time()}
-
-@app.route('/top_song')
-def get_top_song():
-    track_result = sp.search(q='year:2018', type='track', limit=1,offset=0)['tracks']['items'][0]
-    track_name = track_result['name']
-    artist_name = track_result['artists'][0]['name']
-    return {'top_song': track_name + ' by ' + artist_name}
-
 @app.route('/get_genres')
 def get_genres():
-    genres = sp.recommendation_genre_seeds()['genres']
-    return {'genres': genres}
+    return {'genres': list(GENRES.values())}
+
+@app.route('/get_recommendations')
+def get_recommendations():
+    genres = request.args.getlist('genre')
+    genre_keys = list(GENRES.keys())
+    genre_values = list(GENRES.values())
+    seeds = []
+    for genre in genres:
+        pos = genre_values.index(genre)
+        seeds.append(genre_keys[pos])
+    recs = get_track_recommendations(seeds)
+    return {'recommendations': recs}
+
+@app.route('/save_song')
+def save_song():
+    id = request.args.getlist('id')
+    try:
+        save_to_library(id)
+        return {'success': True}
+    except:
+        return {'success': False}
+
+if __name__== '__main__':
+    app.run()

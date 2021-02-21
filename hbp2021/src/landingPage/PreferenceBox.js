@@ -1,11 +1,13 @@
 import {React, useState, useEffect, useReducer} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button,ToggleButtonGroup ,ToggleButton } from 'react-bootstrap';
 import './landing.css'
 
-const PreferenceBox = ({title, buttonInfo,maxSelections}) => {
+const PreferenceBox = ({title, buttonInfo, currSelected, maxSelections, onSelectionChange}) => {
     const [selected, setSelected] = useState([]);
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
+    
+    function handleChange(id) {
+        onSelectionChange(id);
+    }
 
     return (
         <div className="preferenceBox">
@@ -14,66 +16,42 @@ const PreferenceBox = ({title, buttonInfo,maxSelections}) => {
             </div>
             <div className="preferenceChoices">
                 {buttonInfo.map(({id,i}) => 
-                <div 
-                    key={id} 
-                    onClick={() => { 
-                        setSelected(makeSelected(selected, id, maxSelections)); 
-                        forceUpdate();
-                        console.log(selected);
-                    }}
-                    className={isSelected(selected,id) ? 'selected':'unSelected'} 
-                >
+                    <div 
+                        key={id} 
+                        onClick={() => { 
+                            setSelected(makeSelected(selected, id, maxSelections));
+                            handleChange(id);
+                        }}
+                        className={isSelected(id) ? 'selected':'unselected'} 
+                    >
                     <button >{id}</button> 
                 </div>
-
-                )}
-
-            
-            </div>
-            <div className="selectedTypes" >
-                <p>Selected </p>
-                <div className="chosenList">
-                    {selected.map((x) => 
-                        <div 
-                        className="chosenButton"
-                        onClick={() => forceUpdate()}
-                        >
-                            {x}
-                        </div>
-                    )}
-                
-                </div>
-        </div>
-            
+                )}            
+            </div>            
         </div>
     );
-}
 
-function makeSelected(selectedArray, id, maxSelections) {
+    function makeSelected(selectedArray, id, maxSelections) {
+        if (selectedArray.indexOf(id) < 0) {
+            selectedArray.push(id);
+            if(selectedArray.length > maxSelections){
+                selectedArray = selectedArray.slice(1, maxSelections + 1);
+            }
+        }
+        else {
+            selectedArray.splice(selectedArray.indexOf(id), 1);
+        }
+        return selectedArray;
+    };
 
-    if(selectedArray.length == maxSelections){
-        selectedArray = selectedArray.slice(1, maxSelections);
+    function isSelected(id) {
+        return (currSelected.indexOf(id) >= 0);
     }
-    if (selectedArray.indexOf(id) < 0) {
-        selectedArray.push(id);
-        
-    }
-    else {
-        selectedArray.splice(selectedArray.indexOf(id), 1);
-    }
-    
-    return selectedArray;
-  }
-
-function isSelected(selectedArray, id) {
-    return (selectedArray.indexOf(id) >= 0);
 }
 
 PreferenceBox.defaultProps = { 
-    // we should get these from the backend lol
     title: "Genre",
-    buttonInfo: [{id: "Pop"},{id: "Rock"},{id: "Hiphop"},{id: "Country"},{id: "K-Pop"},{id: "J-Pop"}],
-    maxSelections: 5
-}
+    buttonInfo: [{id: "Pop"},{id: "Rock"},{id: "Hiphop"},{id: "Country"},{id: "K-Pop"},{id: "J-Pop"}]
+};
 
 export default PreferenceBox;

@@ -1,7 +1,9 @@
 .preferenceBox {
     background-color: #91bfe5;
     border-radius: 5 px; 
-    width: 90%;
+    width: 50%;
+    margin: auto;
+    padding: 10px;
 }
 
 .preferenceChoices {
@@ -9,11 +11,13 @@
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-around;
+    justify-content: space-around;
 
 }
 
 .selectedTypes {
-    background-color: #e591bb;
+    background-color: #91bfe5;
     border-radius: 5 px; 
     display: flex; 
     justify-content: center;
@@ -39,7 +43,7 @@
     border: none;
     color: #fff;
     font-size: 18px;
-    background-color: #a091e5;
+    background-color: #e59191;  
     transition: 200ms;
     margin: 10px 10px;
     font-weight: bolder;
@@ -47,8 +51,8 @@
     box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.10);
 }
 
-.unSelected button {
-    flex-shrink: 0; 
+.unselected button {
+  flex-shrink: 0; 
   padding: 10px;
   border-radius: 5px;
   border: none;
@@ -63,7 +67,7 @@
 } 
 
  .selected button {
-    flex-shrink: 0; 
+  flex-shrink: 0; 
   padding: 10px;
   border-radius: 5px;
   border: none;

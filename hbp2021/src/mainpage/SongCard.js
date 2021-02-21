@@ -1,48 +1,21 @@
-import React, { useState, Component } from 'react';
+import React, { Component } from 'react';
 import TinderCard from 'react-tinder-card';
-
-// replace with initial song recommendations from backend
-const initialSongs = [
-    {
-      title: 'Song 1',
-      artist: 'Richard Hendricks',
-      url: './img/richard.jpg'
-    },
-    {
-      title: 'Song 2',
-      artist: 'Dinesh Hendricks',
-      url: './img/dinesh.jpg'
-    },
-    {
-      title: 'Song 3',
-      artist: 'Monica Hendricks',
-      url: './img/monica.jpg'
-    },
-    {
-      title: 'Song 4',
-      artist: 'Erlich Hendricks',
-      url: './img/erlich.jpg'
-    },
-    {
-      title: 'Song 5',
-      artist: 'Jared Hendricks',
-      url: './img/jared.jpg'
-    }
-  ]
-
+import ReactAudioPlayer from 'react-audio-player';
 class SongCard extends Component{
-    constructor() {
-        super();
-
+    constructor(props) {
+        super(props);
         this.state = {
             yesCount: 0, 
             seenSongs: [],
-            chosenSongs: []
-        }
+            chosenSongs: [],
+            playing: true,
+            currentSong: this.props.songs[this.props.songs.length - 1],
+            currentIndex: this.props.songs.length - 1,
+        };
     }
 
     // swipe direction handler (yes or no)
-    handleSwipe(direction, curSong){
+    handleSwipe(direction, curSong) {
         console.log('Current: ' + curSong)
   
         if (direction === 'left') {
@@ -52,15 +25,11 @@ class SongCard extends Component{
         else if (direction === 'right') {
             this.handleRightSwipe(curSong);
         }
-
-        console.log(this.state);
-        if (this.state.yesCount === 5) {
-            this.generateSongs(20, curSong)
-        }
-    }
-  
-    outOfFrame(name){
-      console.log(name + ' left the screen!')
+        
+        this.setState({
+            currentSong: this.props.songs[this.state.currentIndex - 1],
+            currentIndex: this.state.currentIndex - 1
+        });
     }
 
     handleLeftSwipe(curSong) {
@@ -74,8 +43,8 @@ class SongCard extends Component{
     }
 
     handleRightSwipe(curSong) {
+        fetch('/save_song?id=' + curSong.id).then(res => res.json()).then(data => {return null});
         this.setState((prevState) => {
-          // Important: read `state` instead of `this.state` when updating.
           return { 
             yesCount: prevState.yesCount + 1, 
             seenSongs: prevState.seenSongs.concat(curSong),
@@ -83,37 +52,37 @@ class SongCard extends Component{
           }
         }
     )};
-
-    generateSongs(curSong, numSongs){
-        // generate/render songs based off of liked songs
-        // don't add song if it is in "seen" songs
-        // add to end of songs list 
-        const newSongSuggestions = [];
-        
-        this.setState((prevState) => {
-            return {
-                yesCount: 0,
-                seenSongs: prevState.seenSongs.concat(curSong),
-                chosenSongs: prevState.chosenSongs.concat(curSong),
-            }
-        })
+    
+    getAudioPlayer() {
+        this.setState();
+        if (this.state.currentSong) {
+            return <ReactAudioPlayer
+            src={this.state.currentSong.preview}
+            autoPlay
+            controls/>
+        } else {
+            return <div />
+        }
     }
 
     render() {
         return (
             <div className='cardContainer'>
-                {initialSongs.map((song) =>
+                {this.getAudioPlayer()}
+                {this.props.songs.map((song) =>
                     <TinderCard className='swipe' 
-                        key={song.title} 
+                        key={song.name} 
                         preventSwipe={['up', 'down']}
-                        onSwipe={(dir) => this.handleSwipe(dir, song.title)}>
-                            <div style={{ backgroundImage: 'url(' + song.url + ')' }} className='card'>
-                            <h2>{song.title}</h2>
-                            <h4>{song.artist}</h4>
-                            </div>
+                        onSwipe={(dir) => this.handleSwipe(dir, song)}
+                    >
+                    <div style={{ backgroundImage: 'url(' + song.photo + ')' }} className='card'>
+                        <h2>{song.name}</h2>
+                        <h4>{song.artists}</h4>
+                    </div>
                     </TinderCard>
                 )}
-            </div> 
+                
+            </div>
         )
     }
 }

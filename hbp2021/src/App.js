@@ -3,7 +3,9 @@ import './App.css'
 import Switch from 'react-ios-switch'
 
 import Advanced from './examples/Advanced'
-import Simple from './examples/Simple'
+import MainPage from './mainpage/MainPage'
+
+import PreferenceBox from './landingPage/PreferenceBox'
 
 function App () {
   const [showAdvanced, setShowAdvanced] = useState(true)
@@ -32,7 +34,7 @@ function App () {
 
   return (
     <div className='app'>
-      {showAdvanced ? <Advanced /> : <Simple />}
+      {showAdvanced ? <Advanced /> : <MainPage />}
       <div className='row'>
         <p style={{ color: '#fff' }}>Show advanced example</p> <Switch checked={showAdvanced} onChange={setShowAdvanced} />
       </div>
@@ -47,6 +49,7 @@ function App () {
           {genres.map((genre) => <li>{genre}</li>)}
         </ul>
       </div>
+      <PreferenceBox />
     </div>
   )
 }

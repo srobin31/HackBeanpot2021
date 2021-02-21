@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import './App.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Switch from 'react-ios-switch'
-
+import { Button, Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import Advanced from './examples/Advanced'
 import Simple from './examples/Simple'
 
@@ -22,3 +22,5 @@ function Pills () {
         </Nav>
     )
 }
+
+export default Pills;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import {React, useState, useEffect, useReducer} from 'react';
 import './App.css'
 import Switch from 'react-ios-switch'
 ​
@@ -10,7 +10,6 @@ function App () {
   const [currentTime, setCurrentTime] = useState(0)
   const [topSong, setTopSong] = useState('')
   const [genres, setGenres] = useState([])
-​
 ​
   useEffect(() => {
     fetch('/time').then(res => res.json()).then(data => {

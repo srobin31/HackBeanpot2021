@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import {React, useState, useEffect, useReducer} from 'react';
 import './App.css'
 import Switch from 'react-ios-switch'
 
@@ -12,6 +12,8 @@ function App () {
   const [currentTime, setCurrentTime] = useState(0)
   const [topSong, setTopSong] = useState('')
   const [genres, setGenres] = useState([])
+  // const [selected, setSelected] = useState([]);
+  // const [, forceUpdate] = useReducer(x => x + 1, 0);
 
 
   useEffect(() => {
@@ -49,8 +51,12 @@ function App () {
           {genres.map((genre) => <li>{genre}</li>)}
         </ul>
       </div>
+      
       <PreferenceBox />
-    </div>
+      <PreferenceBox />
+
+      
+      </div>
   )
 }
 

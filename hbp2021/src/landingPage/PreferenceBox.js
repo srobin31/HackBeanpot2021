@@ -33,7 +33,7 @@ const PreferenceBox = ({title, buttonInfo,maxSelections}) => {
             
             </div>
             <div className="selectedTypes" >
-                <p>Selected {title}</p>
+                <p>Selected </p>
                 <div className="chosenList">
                     {selected.map((x) => 
                         <div 
@@ -45,7 +45,7 @@ const PreferenceBox = ({title, buttonInfo,maxSelections}) => {
                     )}
                 
                 </div>
-            </div>
+        </div>
             
         </div>
     );
@@ -76,7 +76,6 @@ PreferenceBox.defaultProps = {
     title: "Genre",
     buttonInfo: [{id: "Pop"},{id: "Rock"},{id: "Hiphop"},{id: "Country"},{id: "K-Pop"},{id: "J-Pop"}],
     maxSelections: 5
-    
 }
 
 export default PreferenceBox;

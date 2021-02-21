@@ -89,12 +89,12 @@ h2 {
   animation-duration: 800ms;
 }
 
-.buttons {
+/* .buttons {
   margin: 20px;
   display: flex;
-}
+} */
 
-.buttons button {
+/* .buttons button {
   flex-shrink: 0;
   padding: 10px;
   border-radius: 5px;
@@ -107,7 +107,8 @@ h2 {
   font-weight: bolder;
   width: 160px;
   box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.10);
-}
+}  
+
 
 .buttons button:hover {
   transform: scale(1.05);
@@ -122,3 +123,5 @@ h2 {
   64%  { transform: scale(1,1) }
   100% { transform: scale(1,1) }
 }
+
+*/

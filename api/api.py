@@ -1,16 +1,24 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
+from flask_cors import CORS, cross_origin
 
 from constants import GENRES
 from utils import *
 
-app = Flask(__name__, static_folder='../build', static_url_path='')
+app = Flask(__name__, static_folder='build', static_url_path='')
+cors = CORS(app)
+
+@app.route('/')
+def serve():
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/get_genres')
+@cross_origin()
 def get_genres():
     return {'genres': list(GENRES.values())}
 
 @app.route('/get_recommendations')
+@cross_origin()
 def get_recommendations():
     genres = request.args.getlist('genre')
     genre_keys = list(GENRES.keys())
@@ -23,6 +31,7 @@ def get_recommendations():
     return {'recommendations': recs}
 
 @app.route('/save_song')
+@cross_origin()
 def save_song():
     id = request.args.getlist('id')
     try:

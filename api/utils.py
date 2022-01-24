@@ -5,16 +5,16 @@ from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 
 scopeless_client = spotipy.Spotify(
     auth_manager=SpotifyOAuth(
-        client_id=CLIENT_ID, 
-        client_secret=CLIENT_SECRET, 
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
         redirect_uri=REDIRECT_URI
     )
 )
 
 modify_lib_client = spotipy.Spotify(
     auth_manager=SpotifyOAuth(
-        client_id=CLIENT_ID, 
-        client_secret=CLIENT_SECRET, 
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
         scope='user-library-modify'
     )
@@ -44,5 +44,5 @@ def get_album_cover(id):
     return album['images'][0]['url']
 
 def save_to_library(track_id):
-    client.current_user_saved_tracks_add(track_id)
+    modify_lib_client.current_user_saved_tracks_add(track_id)
     return True

@@ -4,7 +4,7 @@ from flask import Flask, request
 from constants import GENRES
 from utils import *
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='build', static_url_path='')
 
 @app.route('/get_genres')
 def get_genres():

@@ -1,1 +1,1 @@
-release: sh deploy.sh
+web: python api/api.py

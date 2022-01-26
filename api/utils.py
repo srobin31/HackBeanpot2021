@@ -1,31 +1,35 @@
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy import Spotify
+from spotipy.util import prompt_for_user_token
 
-from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, CACHES_FOLDER, GENRES
 
-scopeless_client = spotipy.Spotify(
-    auth_manager=SpotifyOAuth(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI
-    )
-)
+scope = 'user-library-modify'
 
-modify_lib_client = spotipy.Spotify(
-    auth_manager=SpotifyOAuth(
+def spotify_connect(session_id):
+    '''
+    Connect to the Spotify API using the token associated with the given username,
+    generating one if it does not already exist.
+    '''
+    token = prompt_for_user_token(
+        username=session_id,
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
-        scope='user-library-modify'
+        scope=scope,
+        cache_path=CACHES_FOLDER + session_id
     )
-)
+    if token:
+        return Spotify(auth=token)
+    else:
+        print("Can't get token for {}.".format(username))
+        return None
 
 def get_recommendable_genres():
-    genres = scopeless_client.recommendation_genre_seeds()['genres']
-    return {'genres': genres}
+    return {'genres': list(GENRES.values())}
 
-def get_track_recommendations(seed_genres):
-    recommendations = scopeless_client.recommendations(seed_genres=seed_genres, limit=50)['tracks']
+def get_track_recommendations(session_id, seed_genres):
+    spotify = spotify_connect(session_id)
+    recommendations = spotify.recommendations(seed_genres=seed_genres, limit=50)['tracks']
     recs = []
     for rec in recommendations:
         if rec['preview_url']:
@@ -34,15 +38,16 @@ def get_track_recommendations(seed_genres):
                 'name': rec['name'],
                 'artists': [artist['name'] for artist in rec['artists']],
                 'preview': rec['preview_url'],
-                'photo': get_album_cover(rec['id'])
+                'photo': get_album_cover(spotify, rec['id'])
             }
             recs.append(track)
     return recs
 
-def get_album_cover(id):
-    album = scopeless_client.track(id)['album']
+def get_album_cover(spotify, track_id):
+    album = spotify.track(track_id)['album']
     return album['images'][0]['url']
 
-def save_to_library(track_id):
-    modify_lib_client.current_user_saved_tracks_add(track_id)
+def save_to_library(session_id, track_id):
+    spotify = spotify_connect(session_id)
+    spotify.current_user_saved_tracks_add([track_id])
     return True

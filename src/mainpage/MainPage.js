@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Session from 'react-session-api'
 import SongCard from './SongCard';
 
 function MainPage (selection_obj) {
@@ -10,7 +11,7 @@ function MainPage (selection_obj) {
     selection.forEach((genre) => {
       query_string.push('genre=' + encodeURIComponent(genre));
     });
-    fetch('/get_recommendations?'.concat(query_string.join('&'))).then(res => res.json()).then(data => {
+    fetch(`/get_recommendations?session_id=${Session.get('session_id')}&`.concat(query_string.join('&'))).then(res => res.json()).then(data => {
       setRecommendations(data['recommendations']);
     });
   }, []);

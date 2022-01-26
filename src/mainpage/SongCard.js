@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import Session from 'react-session-api'
 import TinderCard from 'react-tinder-card';
 import ReactAudioPlayer from 'react-audio-player';
 class SongCard extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            yesCount: 0, 
+            yesCount: 0,
             seenSongs: [],
             chosenSongs: [],
             playing: true,
@@ -17,15 +18,15 @@ class SongCard extends Component{
     // swipe direction handler (yes or no)
     handleSwipe(direction, curSong) {
         console.log('Current: ' + curSong)
-  
+
         if (direction === 'left') {
             this.handleLeftSwipe(curSong);
+        } else if (direction === 'right') {
+            this.handleRightSwipe(curSong);
+        } else {
+          return
         }
 
-        else if (direction === 'right') {
-            this.handleRightSwipe(curSong);
-        }
-        
         this.setState({
             currentSong: this.props.songs[this.state.currentIndex - 1],
             currentIndex: this.state.currentIndex - 1
@@ -43,16 +44,16 @@ class SongCard extends Component{
     }
 
     handleRightSwipe(curSong) {
-        fetch('/save_song?id=' + curSong.id).then(res => res.json()).then(data => {return null});
+        fetch(`/save_song?session_id=${Session.get('session_id')}&track_id=${curSong.id}`).then(res => res.json()).then(data => {return null});
         this.setState((prevState) => {
-          return { 
-            yesCount: prevState.yesCount + 1, 
+          return {
+            yesCount: prevState.yesCount + 1,
             seenSongs: prevState.seenSongs.concat(curSong),
             chosenSongs: prevState.chosenSongs.concat(curSong)
           }
         }
     )};
-    
+
     getAudioPlayer() {
         this.setState();
         if (this.state.currentSong) {
@@ -70,8 +71,8 @@ class SongCard extends Component{
             <div className='cardContainer'>
                 {this.getAudioPlayer()}
                 {this.props.songs.map((song) =>
-                    <TinderCard className='swipe' 
-                        key={song.name} 
+                    <TinderCard className='swipe'
+                        key={song.name}
                         preventSwipe={['up', 'down']}
                         onSwipe={(dir) => this.handleSwipe(dir, song)}
                     >
@@ -81,7 +82,7 @@ class SongCard extends Component{
                     </div>
                     </TinderCard>
                 )}
-                
+
             </div>
         )
     }

@@ -5,6 +5,8 @@ CLIENT_ID = os.environ['SPOTIPY_CLIENT_ID']
 CLIENT_SECRET = os.environ['SPOTIPY_CLIENT_SECRET']
 REDIRECT_URI = os.environ['SPOTIPY_REDIRECT_URI']
 
+CACHES_FOLDER = './.spotify_caches/'
+
 GENRES = OrderedDict({
     'acoustic': 'Acoustic',
     'afrobeat': 'Afrobeat',

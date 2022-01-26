@@ -3,13 +3,16 @@ import {
   useState,
   useEffect,
   useReducer,
-} from 'react';
-import './App.css'
+} from 'react'
 
+import { Carousel } from 'react-bootstrap'
+import Session from 'react-session-api'
+import uuid from 'react-uuid'
+
+import './App.css'
 import PreferenceBox from './landingPage/PreferenceBox'
 import MainPage from './mainpage/MainPage'
 
-import { Carousel } from 'react-bootstrap';
 
 const MAX_SELECTIONS = 5;
 
@@ -26,6 +29,8 @@ function App() {
   });
 
   const [selected, setSelected] = useState([]);
+  const sessionId = uuid();
+  Session.set('session_id', sessionId)
 
   useEffect(() => {
     fetch('/get_genres').then(res => res.json()).then(data => {
@@ -68,19 +73,19 @@ function App() {
   function getCarousel() {
     return (
       <div className="carousel">
-        <Carousel 
+        <Carousel
           interval={null}
           indicators={false}
          >
           {buttonInfos.map((buttonInfo) => {
             return <Carousel.Item>
-                    <PreferenceBox 
-                      buttonInfo={buttonInfo} 
+                    <PreferenceBox
+                      buttonInfo={buttonInfo}
                       currSelected={selected.slice()}
                       maxSelections={MAX_SELECTIONS}
                       onSelectionChange={handleSelectionChange}
                     />
-                    </Carousel.Item>            
+                    </Carousel.Item>
           })}
         </Carousel>
       </div>
@@ -92,7 +97,7 @@ function App() {
       <div className="selectedTypes">
         <h4>Selected</h4>
         <div className="chosenList">
-          {selected.map((genre) => 
+          {selected.map((genre) =>
           <div className="chosenButton">
             {genre}
           </div>
@@ -101,15 +106,15 @@ function App() {
       </div>
     )
   }
- 
+
   return (
-    <div className='app'> 
-      {showSuggestions ? < MainPage selection={selected} /> : <div> <h4>Please select up to 5 genres</h4>{getCarousel()} {getSelected()} </div>} 
+    <div className='app'>
+      {showSuggestions ? < MainPage selection={selected} /> : <div> <h4>Please select up to 5 genres</h4>{getCarousel()} {getSelected()} </div>}
       <div className='row'>
         <div className={showSuggestions ? 'remove': 'submit' }>
-        <button onClick={() => setShowSuggestions(true)} > Generate! </button> 
+        <button onClick={() => setShowSuggestions(true)} > Generate! </button>
         </div>
-      </div>       
+      </div>
     </div>
   )
 };

@@ -25,13 +25,35 @@ def spotify_connect(session_id):
             cache_path=cache
         )
     except:
-        url = 'https://accounts.spotify.com/api/token'
-        msg = f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii')
-        base64_msg = base64.b64encode(msg).decode('ascii')
-        headers = {'Authorization': f'Basic {base64_msg}'}
-        data = {'grant_type': 'client_credentials'}
-        r = requests.post(url, headers=headers, data=data)
-        token = r.json()['access_token']
+        auth_url = 'https://accounts.spotify.com/authorize'
+        token_url = 'https://accounts.spotify.com/api/token'
+
+        # Make a request to the /authorize endpoint to get an authorization code
+        auth_code = requests.get(auth_url, {
+            'client_id': CLIENT_ID,
+            'response_type': 'code',
+            'redirect_uri': REDIRECT_URI,
+            'scope': scope,
+            'state': 'spotifinder',
+        })
+
+        auth_header = base64.urlsafe_b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii'))
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': f'Basic {auth_header.decode('ascii')}',
+        }
+
+        payload = {
+            'grant_type': 'authorization_code',
+            'code': auth_code,
+            'redirect_uri': REDIRECT_URI,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+        }
+
+        # Make a request to the /token endpoint to get an access token
+        access_token_request = requests.post(url=TOKEN_URL, headers=headers, data=payload)
+        token = access_token_request.json()['access_token']
         with open(cache, "w") as f:
             f.write(r.text)
 

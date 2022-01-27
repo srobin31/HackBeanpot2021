@@ -52,7 +52,7 @@ def spotify_connect(session_id):
         }
 
         # Make a request to the /token endpoint to get an access token
-        access_token_request = requests.post(url=TOKEN_URL, headers=headers, data=payload)
+        access_token_request = requests.post(token_url, headers=headers, data=payload)
         token = access_token_request.json()['access_token']
         with open(cache, "w") as f:
             f.write(r.text)

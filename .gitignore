@@ -3,7 +3,7 @@
 __pycache__/
 .cache
 .flaskenv
-.spotify_caches/
+.spotify_caches/*
 
 # dependencies
 /node_modules

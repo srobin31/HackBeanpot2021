@@ -37,6 +37,11 @@ def spotify_connect(session_id):
             'state': 'spotifinder',
         })
         print(auth_code)
+        try:
+            print(auth_code.text)
+            print(auth_code.json())
+        except:
+            pass
 
         auth_header = base64.urlsafe_b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii'))
         headers = {
@@ -54,7 +59,11 @@ def spotify_connect(session_id):
 
         # Make a request to the /token endpoint to get an access token
         access_token_request = requests.post(token_url, headers=headers, data=payload)
-        print(access_token_request)
+        try:
+            print(access_token_request.text)
+            print(access_token_request.json())
+        except:
+            pass
         token = access_token_request.json()['access_token']
         with open(cache, "w") as f:
             f.write(access_token_request.text)

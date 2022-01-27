@@ -1,3 +1,6 @@
+import base64
+import requests
+
 from spotipy import Spotify
 from spotipy.util import prompt_for_user_token
 
@@ -7,21 +10,34 @@ scope = 'user-library-modify'
 
 def spotify_connect(session_id):
     '''
-    Connect to the Spotify API using the token associated with the given username,
-    generating one if it does not already exist.
+    Connect to the Spotify API using the token associated with the given session
+    ID, generating one if it does not already exist.
     '''
-    token = prompt_for_user_token(
-        username=session_id,
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI,
-        scope=scope,
-        cache_path=CACHES_FOLDER + session_id
-    )
+    token = None
+    try:
+        token = prompt_for_user_token(
+            username=session_id,
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_SECRET,
+            redirect_uri=REDIRECT_URI,
+            scope=scope,
+            cache_path=CACHES_FOLDER + session_id
+        )
+    except:
+        url = 'https://accounts.spotify.com/api/token'
+        msg = f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii')
+        base64_msg = base64.b64encode(msg).decode('ascii')
+        headers = {'Authorization': f'Basic {base64_msg}'}
+        data = {'grant_type': 'client_credentials'}
+        r = requests.post(url, headers=headers, data=data)
+        token = r.json()['access_token']
+        with open(CACHES_FOLDER + session_id, "w") as cache:
+            cache.write(r.text)
+
     if token:
         return Spotify(auth=token)
     else:
-        print("Can't get token for {}.".format(username))
+        print('Could not retrieve Spotify access token.')
         return None
 
 def get_recommendable_genres():

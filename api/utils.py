@@ -4,7 +4,7 @@ import requests
 from spotipy import Spotify
 from spotipy.util import prompt_for_user_token
 
-from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, CACHES_FOLDER, GENRES
+from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GENRES
 
 scope = 'user-library-modify'
 
@@ -14,6 +14,7 @@ def spotify_connect(session_id):
     ID, generating one if it does not already exist.
     '''
     token = None
+    cache = f'/tmp/{session_id}'
     try:
         token = prompt_for_user_token(
             username=session_id,
@@ -21,7 +22,7 @@ def spotify_connect(session_id):
             client_secret=CLIENT_SECRET,
             redirect_uri=REDIRECT_URI,
             scope=scope,
-            cache_path=CACHES_FOLDER + session_id
+            cache_path=cache
         )
     except:
         url = 'https://accounts.spotify.com/api/token'
@@ -31,8 +32,8 @@ def spotify_connect(session_id):
         data = {'grant_type': 'client_credentials'}
         r = requests.post(url, headers=headers, data=data)
         token = r.json()['access_token']
-        with open(CACHES_FOLDER + session_id, "w") as cache:
-            cache.write(r.text)
+        with open(cache, "w") as f:
+            f.write(r.text)
 
     if token:
         return Spotify(auth=token)

@@ -40,7 +40,7 @@ def spotify_connect(session_id):
         auth_header = base64.urlsafe_b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii'))
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': f'Basic {auth_header.decode('ascii')}',
+            'Authorization': f'Basic {auth_header.decode("ascii")}',
         }
 
         payload = {

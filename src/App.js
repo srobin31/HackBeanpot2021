@@ -17,6 +17,7 @@ import MainPage from './mainpage/MainPage'
 const MAX_SELECTIONS = 5;
 
 function App() {
+  const [spotifyConnect, setSpotifyConnect] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [genres, setGenres] = useState([]);
@@ -29,12 +30,14 @@ function App() {
   });
 
   const [selected, setSelected] = useState([]);
-  const sessionId = uuid();
-  Session.set('session_id', sessionId)
 
   useEffect(() => {
-    fetch('/get_genres').then(res => res.json()).then(data => {
-      setGenres(data.genres);
+    var url = window.location.href
+    var args = url.split('?')[1]
+    fetch(`/get_genres?${args}`).then(res => res.json()).then(data => {
+      Session.set('session_id', data.session_id)
+      setGenres(data.genres)
+      setSpotifyConnect(data.spotify)
     })
   }, []);
 
@@ -107,14 +110,31 @@ function App() {
     )
   }
 
+  function renderApp() {
+    if (spotifyConnect === true) {
+      if (showSuggestions) {
+        return <MainPage selection={selected} />
+      } else {
+        return <div> <h4>Please select up to 5 genres</h4>{getCarousel()} {getSelected()} </div>
+      }
+    } else {
+      return <a href={spotifyConnect}>Login to Spotify</a>
+    }
+  }
+
   return (
     <div className='app'>
-      {showSuggestions ? < MainPage selection={selected} /> : <div> <h4>Please select up to 5 genres</h4>{getCarousel()} {getSelected()} </div>}
-      <div className='row'>
-        <div className={showSuggestions ? 'remove': 'submit' }>
-        <button onClick={() => setShowSuggestions(true)} > Generate! </button>
+      {renderApp()}
+      {spotifyConnect === true ?
+        <div className='row'>
+          <div className={showSuggestions ? 'remove': 'submit' }>
+            <button onClick={() => setShowSuggestions(true)} > Generate! </button>
+          </div>
         </div>
-      </div>
+        :
+        <div></div>
+      }
+
     </div>
   )
 };

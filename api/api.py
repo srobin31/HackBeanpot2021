@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS, cross_origin
 
@@ -14,7 +15,9 @@ def serve():
 @app.route('/get_genres')
 @cross_origin()
 def get_genres():
-    return get_recommendable_genres()
+    session_id = str(uuid.uuid4())
+    code = request.args.get('code')
+    return get_recommendable_genres(session_id, code)
 
 @app.route('/get_recommendations')
 @cross_origin()

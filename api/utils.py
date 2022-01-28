@@ -7,7 +7,7 @@ from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GENRES
 SCOPE = 'user-library-modify'
 CACHE = '/tmp/'
 
-def spotify_connect(session_id):
+def spotify_connect(session_id, code=''):
     '''
     Connect to the Spotify API using the token associated with the given session
     ID, generating one if it does not already exist.
@@ -19,20 +19,22 @@ def spotify_connect(session_id):
     token_info = sp_oauth.get_cached_token()
     if token_info:
         token = token_info['access_token']
-    else:
-        url = request.url
-        code = sp_oauth.parse_response(url)
-        if code:
-            token_info = sp_oauth.get_access_token(code)
-            token = token_info['access_token']
+    elif code:
+        token_info = sp_oauth.get_access_token(code)
+        token = token_info['access_token']
 
     if token:
         return Spotify(token)
     else:
-        return f"<a href='{sp_oauth.get_authorize_url()}'>Login to Spotify</a>"
+        return sp_oauth.get_authorize_url()
 
-def get_recommendable_genres():
-    return {'genres': list(GENRES.values())}
+def get_recommendable_genres(session_id, code):
+    spotify = spotify_connect(session_id, code)
+    try:
+        spotify.current_user()
+        return {'session_id': session_id, 'genres': list(GENRES.values()), 'spotify': True}
+    except:
+        return {'session_id': session_id, 'genres': list(GENRES.values()), 'spotify': spotify}
 
 def get_track_recommendations(session_id, seed_genres):
     spotify = spotify_connect(session_id)

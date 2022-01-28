@@ -15,7 +15,7 @@ def spotify_connect(session_id):
     token = None
     cache_path = CACHE + session_id
 
-    sp_oauth = SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope=SCOPE, cache_path=cache_path)
+    sp_oauth = SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SCOPE, cache_path=cache_path)
     token_info = sp_oauth.get_cached_token()
     if token_info:
         token = token_info['access_token']

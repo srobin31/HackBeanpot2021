@@ -1,12 +1,11 @@
-import base64
-import requests
-
 from spotipy import Spotify
 from spotipy.util import prompt_for_user_token
+from spotipy.oauth2 import SpotifyOAuth
 
 from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, GENRES
 
-scope = 'user-library-modify'
+SCOPE = 'user-library-modify'
+CACHE = '/tmp/'
 
 def spotify_connect(session_id):
     '''
@@ -14,65 +13,23 @@ def spotify_connect(session_id):
     ID, generating one if it does not already exist.
     '''
     token = None
-    cache = f'/tmp/{session_id}'
-    try:
-        token = prompt_for_user_token(
-            username=session_id,
-            client_id=CLIENT_ID,
-            client_secret=CLIENT_SECRET,
-            redirect_uri=REDIRECT_URI,
-            scope=scope,
-            cache_path=cache
-        )
-    except:
-        auth_url = 'https://accounts.spotify.com/authorize'
-        token_url = 'https://accounts.spotify.com/api/token'
+    cache_path = CACHE + session_id
 
-        # Make a request to the /authorize endpoint to get an authorization code
-        auth_code = requests.get(auth_url, {
-            'client_id': CLIENT_ID,
-            'response_type': 'code',
-            'redirect_uri': REDIRECT_URI,
-            'scope': scope,
-            'state': 'spotifinder',
-        })
-        print(auth_code)
-        try:
-            print(auth_code.text)
-            print(auth_code.json())
-        except:
-            pass
-
-        auth_header = base64.urlsafe_b64encode(f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii'))
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': f'Basic {auth_header.decode("ascii")}',
-        }
-
-        payload = {
-            'grant_type': 'authorization_code',
-            'code': auth_code,
-            'redirect_uri': REDIRECT_URI,
-            'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
-        }
-
-        # Make a request to the /token endpoint to get an access token
-        access_token_request = requests.post(token_url, headers=headers, data=payload)
-        try:
-            print(access_token_request.text)
-            print(access_token_request.json())
-        except:
-            pass
-        token = access_token_request.json()['access_token']
-        with open(cache, "w") as f:
-            f.write(access_token_request.text)
+    sp_oauth = oauth2.SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope=SCOPE, cache_path=cache_path)
+    token_info = sp_oauth.get_cached_token()
+    if token_info:
+        token = token_info['access_token']
+    else:
+        url = request.url
+        code = sp_oauth.parse_response(url)
+        if code:
+            token_info = sp_oauth.get_access_token(code)
+            token = token_info['access_token']
 
     if token:
-        return Spotify(auth=token)
+        return Spotify(token)
     else:
-        print('Could not retrieve Spotify access token.')
-        return None
+        return f"<a href='{sp_oauth.get_authorize_url()}'>Login to Spotify</a>"
 
 def get_recommendable_genres():
     return {'genres': list(GENRES.values())}

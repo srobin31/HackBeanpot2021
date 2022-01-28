@@ -30,11 +30,10 @@ def spotify_connect(session_id, code=''):
 
 def get_recommendable_genres(session_id, code):
     spotify = spotify_connect(session_id, code)
-    try:
-        spotify.current_user()
-        return {'session_id': session_id, 'genres': list(GENRES.values()), 'spotify': True}
-    except:
+    if isinstance(spotify, str):
         return {'session_id': session_id, 'genres': list(GENRES.values()), 'spotify': spotify}
+    else:
+        return {'session_id': session_id, 'genres': list(GENRES.values()), 'spotify': True}
 
 def get_track_recommendations(session_id, seed_genres):
     spotify = spotify_connect(session_id)

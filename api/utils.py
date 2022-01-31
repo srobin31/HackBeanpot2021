@@ -24,7 +24,7 @@ def spotify_connect(session_id, code=''):
         token = token_info['access_token']
 
     if token:
-        return Spotify(token, requests_timeout=30, retries=1))
+        return Spotify(token, requests_timeout=30, retries=1)
     else:
         return sp_oauth.get_authorize_url()
 

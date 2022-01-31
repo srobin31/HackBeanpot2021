@@ -2,6 +2,7 @@ import os
 import uuid
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS, cross_origin
+from requests.exceptions import ReadTimeout
 
 from utils import *
 
@@ -30,7 +31,10 @@ def get_recommendations():
     for genre in genres:
         pos = genre_values.index(genre)
         seeds.append(genre_keys[pos])
-    recs = get_track_recommendations(session_id, seeds)
+    try:
+        recs = get_track_recommendations(session_id, seeds)
+    except ReadTimeout:
+        recs = []
     return {'recommendations': recs}
 
 @app.route('/save_song')
